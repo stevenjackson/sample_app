@@ -6,6 +6,11 @@ describe "StaticPages" do
     it "should have the content 'Sample App'" do
       page_has("home", "Sample App")
     end
+    
+    it "should not have a custom page title" do
+      visit '/static_pages/home'
+      page.should_not have_selector('title', :text => '| Home')
+    end
   end
   
   describe "Help page" do
