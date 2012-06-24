@@ -1,42 +1,36 @@
 require 'spec_helper'
 
 describe "StaticPages" do
-  
+  subject { page }
+
   describe "Home page" do
-    it "should have the content 'Sample App'" do
-      page_has(root_path, "Sample App")
-    end
-    
-    it "should not have a custom page title" do
-      visit root_path
-      page.should_not have_selector('title', text: '| Home')
-    end
+    it { has_content(root_path, "Sample App") }
+    it { does_not_have_content(root_path, 'Home') }
   end
   
   describe "Help page" do
-    it "should have the content 'Help'" do
-      page_has(help_path, "Help")
-    end
+    it { has_content(help_path, "Help") }
   end
   
   describe "About page" do
-  
-    it "should have the content 'About Us'" do
-      page_has(about_path, "About Us")
-    end
+    it { has_content(about_path, "About Us") }
   end
   
   describe "Contact page" do
-    it "should have the content 'Contact Us'" do
-      page_has(contact_path, "Contact Us")
-    end
+    it { has_content(contact_path, "Contact Us") }
   end
 
 end
 
 
-def page_has(page_path, description)
+def has_content(page_path, description)
      visit page_path
      page.should have_selector('h1', text: description)
      page.should have_selector('title', text: description)
+end
+
+def does_not_have_content(page_path, description)
+     visit page_path
+     page.should_not have_selector('h1', text: description)
+     page.should_not have_selector('title', text: description)
 end
