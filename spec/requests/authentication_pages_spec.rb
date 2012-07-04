@@ -42,13 +42,18 @@ describe "Authentication" do
     
   end
   
-end
-
-def sign_in(user)
-  visit signin_path
-  fill_in "Email",    with: user.email
-  fill_in "Password", with: user.password
-  click_button "Sign in"
-  # Sign in when not using Capybara as well.
-  cookies[:remember_token] = user.remember_token
+  describe "authorization" do
+    let(:user) { FactoryGirl.create(:user) }
+    
+    describe "visiting the edit page" do
+      before { visit edit_user_path(user) }
+      it { should have_selector('title', text: 'Sign in') }
+    end
+    
+    describe "submitting to the update action" do
+      before { put user_path(user) }
+      specify { response.should redirect_to(signin_path) }
+    end
+  end
+  
 end
