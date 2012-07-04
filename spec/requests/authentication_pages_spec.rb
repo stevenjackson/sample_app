@@ -70,6 +70,20 @@ describe "Authentication" do
         specify { response.should redirect_to(root_path) }
       end
     end
+    
+    describe "as non-signed in user" do
+      before { visit edit_user_path(user) }
+      describe "after signing in it should render the desired protected page" do
+        before do
+          fill_in "Email",    with: user.email
+          fill_in "Password", with: user.password
+          click_button "Sign in"
+        end
+        
+        it { should have_selector('title', text: 'Edit user') }
+      end
+    end
+    
   end
   
 end
