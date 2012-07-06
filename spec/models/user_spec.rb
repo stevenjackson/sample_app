@@ -126,4 +126,12 @@ describe User do
     before { @user.save }
     its(:remember_token) { should_not be_blank }
   end
+  
+  it { should_not be_admin }
+  
+  describe "check admin" do
+    before { @user.toggle!(:admin) }
+    it { should be_admin }
+  end
+  
 end
