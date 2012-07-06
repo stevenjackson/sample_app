@@ -91,6 +91,34 @@ describe "Authentication" do
       
     end
     
+    describe "as non-admin user try and submit a DELETE User request" do
+      let(:user) { FactoryGirl.create(:user) }
+      let(:non_admin) { FactoryGirl.create(:user) }
+      
+      describe "before sign-in" do
+        before { delete user_path(user) }
+        specify { response.should redirect_to(signin_path) }
+      end
+      
+      describe "after sign-in" do
+      
+        before do
+          sign_in non_admin
+          delete user_path(user)
+        end
+      
+        specify { response.should redirect_to(root_path) }
+      end
+    end
+    
+    describe "as an admin try to DELETE self" do
+      let(:admin) { FactoryGirl.create(:admin) }
+      before { sign_in admin }
+      it "should not work" do
+        expect { delete user_path(admin) }.to change(User, :count).by(0)
+      end
+      
+    end
+    
   end
-  
 end

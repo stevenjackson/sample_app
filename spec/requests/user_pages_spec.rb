@@ -147,6 +147,7 @@ describe "User pages" do
     	    page.should have_selector('div.alert.alert-success')
     	  end
     	  it { should_not have_link('delete', href: user_path(admin)) }
+    	  
     	end
     
     end
