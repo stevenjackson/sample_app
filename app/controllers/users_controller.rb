@@ -40,6 +40,10 @@ class UsersController < ApplicationController
     @users = User.paginate(page: params[:page])
   end
   
+  def destroy
+    User.find(params[:id]).destroy
+    redirect_to users_path
+  end
   
   private
 
