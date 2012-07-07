@@ -139,4 +139,16 @@ describe User do
   
   it { should respond_to(:microposts) }
   
+  describe "should order microposts, newest first" do
+    before { @user.save }
+    let!(:older_micropost) do 
+      FactoryGirl.create(:micropost, user: @user, created_at: 1.day.ago)
+    end
+    let!(:newer_micropost) do
+      FactoryGirl.create(:micropost, user: @user, created_at: 1.hour.ago)
+    end
+    
+    specify { @user.microposts.should == [newer_micropost, older_micropost] }
+  end
+  
 end
