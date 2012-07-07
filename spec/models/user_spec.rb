@@ -137,4 +137,6 @@ describe User do
     it { should be_admin }
   end
   
+  it { should respond_to(:microposts) }
+  
 end
