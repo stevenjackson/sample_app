@@ -42,83 +42,102 @@ describe "Authentication" do
     end
     
   end
+end
   
-  describe "authorization" do
+describe "authorization" do
+  subject { page }
+  let(:user) { FactoryGirl.create(:user) }
+  
+  describe "visiting the edit page" do
+    before { visit edit_user_path(user) }
+    it { should have_selector('title', text: 'Sign in') }
+  end
+  
+  describe "submitting to the update action" do
+    before { put user_path(user) }
+    specify { response.should redirect_to(signin_path) }
+  end
+  
+  describe "as wrong user" do
     let(:user) { FactoryGirl.create(:user) }
+    let(:wrong_user) { FactoryGirl.create(:user, email: "wrong@example.com") }
+    before { sign_in user }
     
-    describe "visiting the edit page" do
-      before { visit edit_user_path(user) }
+    describe "visiting other user's edit page" do
+      before { visit edit_user_path(wrong_user) }
+      it { should_not have_selector('title', text: "Edit user") }
+    end
+    
+    describe "submitting a PUT request to the Users#update action" do
+      before { put user_path(wrong_user) }
+      specify { response.should redirect_to(root_path) }
+    end
+  end
+  
+  describe "as non-signed in user" do
+    before { visit edit_user_path(user) }
+    describe "after signing in it should render the desired protected page" do
+      before do
+        fill_in "Email",    with: user.email
+        fill_in "Password", with: user.password
+        click_button "Sign in"
+      end
+      
+      it { should have_selector('title', text: 'Edit user') }
+    end
+    
+    describe "visiting the user index" do
+      before { visit users_path }
       it { should have_selector('title', text: 'Sign in') }
     end
     
-    describe "submitting to the update action" do
-      before { put user_path(user) }
+  end
+  
+  describe "as non-admin user try and submit a DELETE User request" do
+    let(:user) { FactoryGirl.create(:user) }
+    let(:non_admin) { FactoryGirl.create(:user) }
+    
+    describe "before sign-in" do
+      before { delete user_path(user) }
       specify { response.should redirect_to(signin_path) }
     end
     
-    describe "as wrong user" do
-      let(:user) { FactoryGirl.create(:user) }
-      let(:wrong_user) { FactoryGirl.create(:user, email: "wrong@example.com") }
-      before { sign_in user }
-      
-      describe "visiting other user's edit page" do
-        before { visit edit_user_path(wrong_user) }
-        it { should_not have_selector('title', text: "Edit user") }
-      end
-      
-      describe "submitting a PUT request to the Users#update action" do
-        before { put user_path(wrong_user) }
-        specify { response.should redirect_to(root_path) }
-      end
-    end
+    describe "after sign-in" do
     
-    describe "as non-signed in user" do
-      before { visit edit_user_path(user) }
-      describe "after signing in it should render the desired protected page" do
-        before do
-          fill_in "Email",    with: user.email
-          fill_in "Password", with: user.password
-          click_button "Sign in"
-        end
-        
-        it { should have_selector('title', text: 'Edit user') }
+      before do
+        sign_in non_admin
+        delete user_path(user)
       end
-      
-      describe "visiting the user index" do
-        before { visit users_path }
-        it { should have_selector('title', text: 'Sign in') }
-      end
-      
-    end
     
-    describe "as non-admin user try and submit a DELETE User request" do
-      let(:user) { FactoryGirl.create(:user) }
-      let(:non_admin) { FactoryGirl.create(:user) }
-      
-      describe "before sign-in" do
-        before { delete user_path(user) }
-        specify { response.should redirect_to(signin_path) }
-      end
-      
-      describe "after sign-in" do
-      
-        before do
-          sign_in non_admin
-          delete user_path(user)
-        end
-      
-        specify { response.should redirect_to(root_path) }
-      end
+      specify { response.should redirect_to(root_path) }
     end
-    
-    describe "as an admin try to DELETE self" do
-      let(:admin) { FactoryGirl.create(:admin) }
-      before { sign_in admin }
-      it "should not work" do
-        expect { delete user_path(admin) }.to change(User, :count).by(0)
-      end
-      
+  end
+  
+  describe "as an admin try to DELETE self" do
+    let(:admin) { FactoryGirl.create(:admin) }
+    before { sign_in admin }
+    it "should not work" do
+      expect { delete user_path(admin) }.to change(User, :count).by(0)
     end
     
   end
-end
+  
+  describe "require sign in when modifying microposts" do
+  
+    let(:user) { FactoryGirl.create(:user) }
+
+    describe "using create action" do
+      before { post microposts_path }
+      specify { response.should redirect_to(signin_path) }
+    end
+    
+    describe "using create action" do
+      before { delete micropost_path(FactoryGirl.create(:micropost)) }
+      specify { response.should redirect_to(signin_path) }
+    end
+  
+  end
+  
+  
+  
+end #authorization
