@@ -202,9 +202,23 @@ describe "User pages" do
     end
       
     it { should have_button("Unfollow") }
+    
+    it "should decrement followed count" do
+    	expect { click_button "Unfollow" }.to change(signed_in_user.followed_users, :count).by(-1)
+    end
+    
+    it "should cause the other user to lose a follower" do
+    	expect { click_button "Unfollow" }.to change(followed_user.followers, :count).by(-1)
+    end
+    
+    describe "toggling the button" do
+       before { click_button "Unfollow" }
+      it { should have_selector('input', value: 'Follow') }
+    end
+    
   end
   
-  describe "following/followers" do
+  describe "following/followers page" do
   	let(:user) { FactoryGirl.create(:user) }
     let(:other_user) { FactoryGirl.create(:user) }
     before { user.follow!(other_user) }
