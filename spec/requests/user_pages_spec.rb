@@ -25,6 +25,7 @@ describe "User pages" do
       it { should have_content(user.microposts.count) }
     end
     
+    
   end
   
   describe "signup" do
@@ -161,6 +162,19 @@ describe "User pages" do
     	end
     
     end
+    
+  end
+  
+  describe "follow" do
+    let(:signed_in_user) { FactoryGirl.create(:user) }
+    let(:unfollowed_user) { FactoryGirl.create(:user, name: "Bob", email: "bob@example.com") }
+    
+  	before do
+      sign_in signed_in_user
+      visit user_path(unfollowed_user)
+    end
+      
+    it { should have_button("Follow") }
     
   end
   
