@@ -22,6 +22,10 @@ describe "StaticPages" do
         end
       end
       
+      it "user's feed should have delete links" do
+        page.should have_link "delete"
+      end
+      
     end
     
   end
