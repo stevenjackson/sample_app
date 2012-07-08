@@ -165,7 +165,7 @@ describe "User pages" do
     
   end
   
-  describe "follow" do
+  describe "shows follow button" do
     let(:signed_in_user) { FactoryGirl.create(:user) }
     let(:unfollowed_user) { FactoryGirl.create(:user, name: "Bob", email: "bob@example.com") }
     
@@ -175,7 +175,19 @@ describe "User pages" do
     end
       
     it { should have_button("Follow") }
+  end
+  
+  describe "shows unfollow button" do
+    let(:signed_in_user) { FactoryGirl.create(:user) }
+    let(:followed_user) { FactoryGirl.create(:user, name: "Bob", email: "bob@example.com") }
     
+  	before do
+      sign_in signed_in_user
+      signed_in_user.follow!(followed_user)
+      visit user_path(followed_user)
+    end
+      
+    it { should have_button("Unfollow") }
   end
   
 end
