@@ -28,6 +28,6 @@ class User < ActiveRecord::Base
   validates :password_confirmation, presence: true
   
   def feed
-  	microposts
+  	Micropost.where("user_id = ?", id)
   end
 end
