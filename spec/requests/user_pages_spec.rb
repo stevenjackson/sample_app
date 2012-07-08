@@ -165,7 +165,7 @@ describe "User pages" do
     
   end
   
-  describe "user page shows follow button" do
+  describe "user page follow button" do
     let(:signed_in_user) { FactoryGirl.create(:user) }
     let(:unfollowed_user) { FactoryGirl.create(:user, name: "Bob", email: "bob@example.com") }
     
@@ -175,6 +175,20 @@ describe "User pages" do
     end
       
     it { should have_button("Follow") }
+    
+    it "should increment followed count" do
+    	expect { click_button "Follow" }.to change(signed_in_user.followed_users, :count).by(1)
+    end
+    
+    it "should cause the other user to gain a follower" do
+    	expect { click_button "Follow" }.to change(unfollowed_user.followers, :count).by(1)
+    end
+    
+    describe "toggling the button" do
+       before { click_button "Follow" }
+      it { should have_selector('input', value: 'Unfollow') }
+    end
+    
   end
   
   describe "user page shows unfollow button" do
